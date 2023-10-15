@@ -1,0 +1,11 @@
+{
+    "actions": {
+        "show-cube": {
+            "keys": [
+                "s"
+            ],
+            "gamepad": []
+        }
+    },
+    "axes": {}
+}
