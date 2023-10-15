@@ -17,6 +17,11 @@ Tasks:
     13. Add the input plugin
     14-15. Create Input files in ./assets
     16. Do something with the input (Show cube by pressing "s")
+
+    Exercise 4
+    17. Add the Scene plugin
+    18-19. Create a Scene file in ./assets
+    20. Create a Scene
 */
 
 
@@ -26,7 +31,8 @@ Tasks:
 #include <cubos/engine/renderer/point_light.hpp>  // 4
 #include <cubos/engine/renderer/camera.hpp>       // 5
 #include <cubos/engine/input/plugin.hpp>          // 13
-#include <cubos/engine/settings/plugin.hpp>     // 16
+#include <cubos/engine/settings/plugin.hpp>       // 16
+#include <cubos/engine/scene/plugin.hpp>          // 17
 
 
 // include extra required components: Position, Rotation, LocalToWorld
@@ -40,7 +46,7 @@ using cubos::core::ecs::Query;
 using namespace cubos::engine;
 
 static const Asset<InputBindings> BindingsAsset = AnyAsset("7f36cf98-0f5e-4bf9-9325-066ea9550ebd");
-
+static const Asset<Scene> SceneAsset = AnyAsset("5d3269ea-29ad-4f07-ada6-6d29c21568cb");
 
 // 2
 static void setPaletteSystem(Write<Renderer> renderer)
@@ -110,12 +116,20 @@ void showCube(Commands commands, Query<Read<RenderableGrid>> entities,
     }
 }
 
+// 20
+static void spawnScene(Commands commands, Read<Assets> assets)
+{
+    auto sceneRead = assets->read(SceneAsset);
+    commands.spawn(sceneRead->blueprint);
+}
+
 
 int main()
 {
      Cubos cubos{};
      cubos.addPlugin(rendererPlugin);                   // 1
      cubos.addPlugin(inputPlugin);                      // 12
+     cubos.addPlugin(scenePlugin);                      // 17
 
      // 2
      cubos.startupSystem(setPaletteSystem).after("cubos.renderer.init");
@@ -124,6 +138,8 @@ int main()
      cubos.startupSystem(spawnCamerasSystem);           // 5
      cubos.startupSystem(config).tagged("cubos.settings");  // 16
      cubos.startupSystem(init).tagged("cubos.assets");  // 16
+     // 20
+     cubos.startupSystem(spawnScene).tagged("spawn").tagged("cubos.assets");
 
      cubos.system(showCube);                            // 16
 
